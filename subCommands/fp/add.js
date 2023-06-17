@@ -15,25 +15,26 @@ module.exports = class fpAddSubCommand extends BaseSubcommandExecutor {
         const authID = interaction.member.id
         const destID = interaction.options.get('user-option').value
         const pointValue = parseInt(interaction.options.get('added-point-amount').value)
-        const date = Math.floor((new Date(Date.now()))/1000)
+        const date = Math.floor((new Date(Date.now()))/1000)  //gets date in Unix Epoch (seconds since 1970 jan 1st)
 
         if (authID == destID) return interaction.reply({content: 'You cant give yourself FP!'})
 
         sql = 'SELECT * FROM pointTable WHERE senderID = ? AND recipientID = ?'
         data.get(sql,[authID, destID], (err, row)=> {
             if (err) return console.error(err.message);
-            console.log("log")
+
+            //adds log entry to logTable recording action
             sql = 'INSERT INTO logTable (senderID,recipientID,action,time) VALUES(?,?,?,?)'
             data.run(sql,[authID,destID,"added " + pointValue + " FP",date],(err)=>{
                 if (err) return console.error(err.message)})
+
+            //checks if sneder has given reciever points before and if not creates new entry and adds points otherwise it updates old entry adding points
             if(!row) {
-                console.log("New entry")
                 sql = 'INSERT INTO pointTable (senderID,recipientID,points) VALUES(?,?,?)'
                 data.run(sql, [authID,destID,pointValue],(err)=>{
                     if (err) return console.error(err.message)})
                 interaction.reply({content: '<@' + authID + '> has given ' + pointValue + ' Point(s) to <@' + destID + '>. They now have ' + pointValue + ' FP from <@' + authID + '>.' })
             } else {
-                console.log("updating entry")
                 sql = 'UPDATE pointTable SET points = ? WHERE senderID = ? AND recipientID = ?'
                 data.run(sql,[parseInt(row.points) + pointValue,authID,destID],(err)=>{
                     if (err) return console.error(err.message)})

@@ -12,7 +12,7 @@ module.exports = class FPSubCommand extends BaseSlashSubCommand {
     }
 
     getCommandJson() {
-        return new SlashCommandBuilder()
+        return new SlashCommandBuilder()//Creates discord required JSON to register commands all fp commands are created here
             .setName('fp')
             .setDescription('Friend Point Commands')
             .addSubcommand((subcommand) => subcommand

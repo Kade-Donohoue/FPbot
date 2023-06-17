@@ -18,11 +18,11 @@ module.exports = class fpDisplayAmountSubCommand extends BaseSubcommandExecutor 
         sql = 'SELECT * FROM pointTable WHERE senderID = ? AND recipientID = ?'
         data.get(sql,[sendID, destID], (err, row)=> {
             if (err) return console.error(err.message);
+
+            //check if the sender has given the reciever any points and if so send a message with the amount
             if(!row) {
-                console.log("No Points")
                 interaction.reply({content: 'That person has not recieved any FP from the sender. '})
             } else {
-                console.log("has FP")
                 interaction.reply({content: 'They have ' + row.points + " FP from them. "})
             }
         })
